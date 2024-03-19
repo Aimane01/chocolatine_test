@@ -1,0 +1,7 @@
+name : what_time_is_it
+on: [push]
+jobs:
+    Explore-Github-Actions:
+        runs-on: ubuntu-latest
+        steps:
+            - run: date
