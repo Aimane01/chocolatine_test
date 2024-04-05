@@ -1,0 +1,103 @@
+name : chocolatine_workflow
+
+on :
+  push :
+    branches :
+      - '*'
+    paths-ignore:
+      - 'ga-ignore-*'
+  pull_request :
+    branches :
+      - '*'
+    paths-ignore:
+      - 'ga-ignore-*'
+
+env :
+  MIRROR_URL : "git@github.com:EpitechPromo2028/B-CPE-110-COT-1-1-organized-aimane.alassane.git"
+  EXECUTABLES : "organized"
+  UNIT_TEST : "unit_tests"
+
+jobs :
+  check_coding_style:
+    runs-on : ubuntu-latest
+    container:
+      image: ghcr.io/epitech/coding-style-checker:latest
+    steps :
+      - name : checkout repositery
+        uses : actions/checkout@v4
+      
+      - name : check coding_style
+        run : check.sh $(pwd) $(pwd)
+        
+      - name : check if coding_style_file is empty
+        run : |
+          if [ -s "coding-style-reports.log" ]; then
+            filename="coding-style-reports.log"
+            count=0
+            while read -r line; do
+              ((count+=1))
+            done <$filename
+            printf "Annotations\n%d errors\n" "$count"
+            while read -r line; do
+              IFS=':' read -a content <<< "$line"
+              chaine=${content[2]:1}
+              printf "%s coding style error: %s#L%s\n" "$chaine" "${content[0]}" "${content[1]}"
+              printf "%s\n" "${content[3]}"
+            done <$filename
+            exit 1
+          fi
+
+  check_program_compilation:
+    runs-on : ubuntu-latest
+    needs: [check_coding_style]
+    container:
+      image : epitechcontent/epitest-docker
+    steps :
+      - name : checkout repositery
+        uses : actions/checkout@v4
+
+      - name : launch_make
+        run : make
+        timeout-minutes: 2
+
+      - name : launch_make_clean
+        run : make clean
+        run : |
+          if [ ! -x "${EXECUTABLES}" ]; then
+      - name : check_binary
+            exit 1
+          fi
+
+  run_tests:
+    runs-on : ubuntu-latest
+    needs : [check_program_compilation]
+    container:
+      image : epitechcontent/epitest-docker
+    steps :
+      - name : checkout repositery
+        uses : actions/checkout@v4
+
+      - name : launch_make_tests
+        run : make tests_run
+        timeout-minutes: 2
+
+      - name : check_unit_tests
+        run : |
+          if [ ! -x "${UNIT_TEST}" ]; then
+            exit 1
+          fi
+
+  push_to_mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url:
+            git@github.com:EpitechPromo2028/B-CPE-110-COT-1-1-organized-aimane.alassane.git
+          ssh_private_key:
+            ${{ secrets.GITLAB_SSH_PRIVATE_KEY }}
+  
+
