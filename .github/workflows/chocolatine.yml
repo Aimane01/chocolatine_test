@@ -13,7 +13,7 @@ on :
       - 'ga-ignore-*'
 
 env :
-  MIRROR_URL : "git@github.com:EpitechPromo2028/B-CPE-110-COT-1-1-organized-aimane.alassane.git"
+  MIRROR_URL : "git@github.com:EpitechPromo2028/B-DOP-200-COT-2-1-chocolatine-aimane.alassane.git"
   EXECUTABLES : "organized"
   UNIT_TEST : "unit_tests"
 
@@ -96,8 +96,6 @@ jobs :
       - uses: pixta-dev/repository-mirroring-action@v1
         with:
           target_repo_url:
-            git@github.com:EpitechPromo2028/B-CPE-110-COT-1-1-organized-aimane.alassane.git
+            git@github.com:EpitechPromo2028/B-DOP-200-COT-2-1-chocolatine-aimane.alassane.git
           ssh_private_key:
-            ${{ secrets.GITLAB_SSH_PRIVATE_KEY }}
-  
-
+            ${{ secrets.GIT_SSH_PRIVATE_KEY}}
