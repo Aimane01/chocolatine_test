@@ -23,14 +23,9 @@ jobs :
     container:
       image: ghcr.io/epitech/coding-style-checker:latest
     steps :
-      - name : checkout repositery
         uses : actions/checkout@v4
-      
-      - name : check coding_style
-        run : check.sh $(pwd) $(pwd)
-        
-      - name : check if coding_style_file is empty
-        run : |
+        - run : check.sh $(pwd) $(pwd)
+        - run : |
           if [ -s "coding-style-reports.log" ]; then
             filename="coding-style-reports.log"
             count=0
