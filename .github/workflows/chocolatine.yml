@@ -62,9 +62,9 @@ jobs :
 
       - name : launch_make_clean
         run : make clean
+      - name : check_binary
         run : |
           if [ ! -x "${EXECUTABLES}" ]; then
-      - name : check_binary
             exit 1
           fi
 
